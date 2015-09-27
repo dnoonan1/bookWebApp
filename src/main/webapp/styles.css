@@ -1,0 +1,54 @@
+/* 
+    Created on : Sep 27, 2015, 5:37:50 PM
+    Author     : Dan
+*/
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+table, th, td {
+    width: 500px;
+    padding: 4px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+th {
+    background-color: black;
+    color: white;
+}
+
+tr {
+    background-color: white;
+}
+
+tr:nth-of-type(odd) {
+    background-color: #cff;
+}
+
+th {
+    text-align: left;
+}
+
+td {
+    
+}
+
+.error {
+    font-weight: bold;
+    color: red;
+    width:500px;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
