@@ -1,13 +1,9 @@
 package edu.wctc.drn.bookwebapp.controller;
 
-import edu.wctc.drn.bookwebapp.model.Author;
-import edu.wctc.drn.bookwebapp.model.AuthorDAO;
-import edu.wctc.drn.bookwebapp.model.AuthorService;
-import edu.wctc.drn.bookwebapp.model.DAO;
-import edu.wctc.drn.bookwebapp.model.Database;
-import edu.wctc.drn.bookwebapp.model.MySqlDatabase;
+import edu.wctc.drn.bookwebapp.model.*;
 import java.io.IOException;
-import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -21,17 +17,39 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author jlombardo
  */
-@WebServlet(name = "AuthorController", urlPatterns = {"/AuthorController"})
+@WebServlet(name = "AuthorController", urlPatterns = {"/author"})
 public class AuthorController extends HttpServlet {
 
     // NO MAGIC NUMBERS!
-    private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
+    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/book";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "admin";
+
+    private static final String DATE_PATTERN = "yyyy-dd-MM";
+
     private static final String LIST_PAGE = "/listAuthors.jsp";
+    private static final String ADD_PAGE = "/addAuthor.jsp";
+    private static final String UPDATE_PAGE = "/updateAuthor.jsp";
+    private static final String DELETE_PAGE = "/deleteAuthor.jsp";
+
     private static final String LIST_ACTION = "list";
     private static final String ADD_ACTION = "add";
     private static final String UPDATE_ACTION = "update";
     private static final String DELETE_ACTION = "delete";
+
     private static final String ACTION_PARAM = "action";
+    private static final String AUTHOR_NAME_PARAM = "authorName";
+    private static final String AUTHOR_ID_PARAM = "authorId";
+    private static final String DATE_ADDED_PARAM = "dateAdded";
+
+    private static final String AUTHOR_ATTR = "author";
+    private static final String AUTHORS_ATTR = "authors";
+    private static final String AUTHOR_ID_ATTR = "authorId";
+    private static final String AUTHOR_NAME_ATTR = "authorName";
+    private static final String DATE_ADDED_ATTR = "dateAdded";
+    private static final String ERR_MSG_ATTR = "errMsg";
+
+    private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -48,32 +66,61 @@ public class AuthorController extends HttpServlet {
 
         String destination = LIST_PAGE;
         String action = request.getParameter(ACTION_PARAM);
-        
+
         try {
-            Database db = new MySqlDatabase("jdbc:mysql://localhost:3306/book",
-                    "root", "admin");
+            Database db = new MySqlDatabase(DATABASE_URL, USERNAME, PASSWORD);
             DAO<Author> authorDAO = new AuthorDAO(db);
             AuthorService authorService = new AuthorService(authorDAO);
-            
+
             if (action.equals(LIST_ACTION)) {
+
                 List<Author> authors = null;
                 authors = authorService.getAllAuthors();
-                request.setAttribute("authors", authors);
+                request.setAttribute(AUTHORS_ATTR, authors);
                 destination = LIST_PAGE;
-            } else if (action.equals("ADD_ACTION")) {
-                // coming soon
-            } else if (action.equals("UPDATE_ACTION")) {
-                // coming soon
-            } else if (action.equals("DELETE_ACTION")) {
-                // coming soon
+
+            } else if (action.equals(ADD_ACTION)) {
+
+                String name = request.getParameter(AUTHOR_NAME_PARAM);
+                if (name != null) {
+                    Author author = new Author(name, new Date());
+                    authorService.addAuthor(author);
+                    request.setAttribute(AUTHOR_ATTR, author);
+                }
+                destination = ADD_PAGE;
+
+            } else if (action.equals(UPDATE_ACTION)) {
+
+                String sId = request.getParameter(AUTHOR_ID_PARAM);
+                if (sId != null) {
+                    int id = Integer.parseInt(sId);
+                    String name = request.getParameter(AUTHOR_NAME_PARAM);
+                    String sDate = request.getParameter(DATE_ADDED_PARAM);
+                    SimpleDateFormat df = new SimpleDateFormat(DATE_PATTERN);
+                    Date dateAdded = df.parse(sDate);
+                    Author author = new Author(id, name, dateAdded);
+                    request.setAttribute(AUTHOR_ATTR, author);
+                    authorService.saveAuthor(author);
+                }
+                destination = UPDATE_PAGE;
+
+            } else if (action.equals(DELETE_ACTION)) {
+
+                String sId = request.getParameter(AUTHOR_ID_PARAM);
+                if (sId != null) {
+                    int id = Integer.parseInt(sId);
+                    request.setAttribute(AUTHOR_ID_ATTR, id);
+                    authorService.deleteAuthor(id);
+                }
+                destination = DELETE_PAGE;
+
             } else {
-                // no param identified in request, must be an error
-                request.setAttribute("errMsg", NO_PARAM_ERR_MSG);
-                destination = LIST_PAGE;
+                // No param identified in request, must be an error
+                request.setAttribute(ERR_MSG_ATTR, NO_PARAM_ERR_MSG);
             }
 
-        } catch (ClassNotFoundException | SQLException e) {
-            request.setAttribute("errorMsg", e.getCause().getMessage());
+        } catch (Exception e) {
+            request.setAttribute(ERR_MSG_ATTR, e.getCause().getMessage());
         }
 
         // Forward to destination page
