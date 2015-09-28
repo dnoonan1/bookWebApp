@@ -19,7 +19,19 @@
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <h1>Author List</h1>
+        <header>
+            <h1>Administration</h1>
+        </header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="author?action=list">View Authors</a></li>
+                <li><a href="author?action=add">Add Author</a></li>
+                <li><a href="author?action=update">Update Author</a></li>
+                <li><a href="author?action=delete">Delete Author</a></li>
+            </ul>
+        </nav>
+        <h2>Author List</h2>
         <table>
             <tr>
                 <th>ID</th>
@@ -35,9 +47,9 @@
         </tr>
         </c:forEach>
         </table>
-        <c:if test="${errorrMsg != null}">
+        <c:if test="${errMsg != null}">
             <p class="error">Sorry, data could not be retrieved:<br>
-                ${errorMsg}</p>
+                ${errMsg}</p>
         </c:if>
     </body>
 </html>

@@ -29,6 +29,9 @@ public class AuthorDAO implements DAO<Author> {
     
     @Override
     public boolean add(Author author) throws SQLException {
+        if (author.getAuthorName() == null && author.getDateAdded() == null) {
+            return false;
+        }
         List<String> columns = Arrays.asList(
                 AUTHOR_NAME,
                 DATE_ADDED
@@ -45,6 +48,9 @@ public class AuthorDAO implements DAO<Author> {
     
     @Override
     public boolean save(Author author) throws SQLException {
+        if (author.getAuthorName() == null && author.getDateAdded() == null) {
+            return false;
+        }
         List<String> columns = Arrays.asList(
                 AUTHOR_NAME,
                 DATE_ADDED
@@ -53,6 +59,14 @@ public class AuthorDAO implements DAO<Author> {
                 author.getAuthorName(),
                 author.getDateAdded()
         );
+        if (author.getAuthorName() == null) {
+            columns.remove(AUTHOR_NAME);
+            values.remove(null);
+        }
+        if (author.getDateAdded() == null) {
+            columns.remove(AUTHOR_NAME);
+            values.remove(null);
+        }
         openConnection();
         boolean result = db.updateRecord(TABLE_NAME, columns, values, AUTHOR_ID, author.getAuthorId());
         closeConnection();

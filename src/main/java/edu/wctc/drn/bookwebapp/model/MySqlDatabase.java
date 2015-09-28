@@ -137,18 +137,22 @@ public class MySqlDatabase implements Database {
             List<String> columnNames, List columnValues,
             String whereField, Object whereValue) throws SQLException {
         
-        PreparedStatement pstmt = buildUpdateStatement(tableName,
-                columnNames, whereField);
-        
-        // Set parameter column values
-        int i = 1;
-        Iterator it = columnValues.iterator();
-        while (it.hasNext()) {
-            pstmt.setObject(i++, it.next());
+        if (!columnNames.isEmpty()) {
+            PreparedStatement pstmt = buildUpdateStatement(tableName,
+                    columnNames, whereField);
+
+            // Set parameter column values
+            int i = 1;
+            Iterator it = columnValues.iterator();
+            while (it.hasNext()) {
+                pstmt.setObject(i++, it.next());
+            }
+            // Set parameter WHERE value
+            pstmt.setObject(i, whereValue);
+            return pstmt.executeUpdate() == SUCCESS;
+        } else {
+            return false;
         }
-        // Set parameter WHERE value
-        pstmt.setObject(i, whereValue);
-        return pstmt.executeUpdate() == SUCCESS;
     }
     
     

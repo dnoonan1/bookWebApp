@@ -31,8 +31,8 @@ public class AuthorService {
         return dao.getById(id);
     }
     
-    public boolean deleteAuthor(Author author) throws SQLException {
-        return dao.deleteById(author.getAuthorId());
+    public boolean deleteAuthor(int id) throws SQLException {
+        return dao.deleteById(id);
     }
     
 }

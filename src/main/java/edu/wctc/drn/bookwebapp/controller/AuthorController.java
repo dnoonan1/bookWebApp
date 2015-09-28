@@ -25,7 +25,7 @@ public class AuthorController extends HttpServlet {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "admin";
 
-    private static final String DATE_PATTERN = "yyyy-dd-MM";
+    private static final String DATE_PATTERN = "MM/dd/yyyy";
 
     private static final String LIST_PAGE = "/listAuthors.jsp";
     private static final String ADD_PAGE = "/addAuthor.jsp";
