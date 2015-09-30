@@ -28,16 +28,20 @@ nav li a:focus, nav li a:hover {
     background-color: #333;
 }
 
-input, label {
+form input, form label {
     display: block;
     margin: 10px 0;
 }
 
+input[type="checkbox"] {
+    text-align: center;
+}
+
 table, th, td {
-    width: 500px;
+    width: 600px;
     padding: 4px;
-    border-collapse: collapse;
     border: 1px solid black;
+    border-collapse: collapse;
 }
 
 th {
@@ -61,10 +65,28 @@ td {
     
 }
 
+.controls {
+    margin: 10px 0;
+}
+
 .error {
     font-weight: bold;
     color: red;
-    width:500px;
+    width: 500px;
+}
+
+.select {
+    width: 100px;
+    text-align: center;
+}
+
+.edit button {
+    background-color: transparent;
+    border: none;
+}
+
+.edit-delete {
+    text-align: center;
 }
 
 .text-left {

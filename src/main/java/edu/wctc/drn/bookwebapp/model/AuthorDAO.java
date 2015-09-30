@@ -29,7 +29,7 @@ public class AuthorDAO implements DAO<Author> {
     
     @Override
     public boolean add(Author author) throws SQLException {
-        if (author.getAuthorName() == null && author.getDateAdded() == null) {
+        if (author.getName() == null && author.getDateAdded() == null) {
             return false;
         }
         List<String> columns = Arrays.asList(
@@ -37,7 +37,7 @@ public class AuthorDAO implements DAO<Author> {
                 DATE_ADDED
         );
         List values = Arrays.asList(
-                author.getAuthorName(),
+                author.getName(),
                 author.getDateAdded()
         );
         openConnection();
@@ -48,7 +48,7 @@ public class AuthorDAO implements DAO<Author> {
     
     @Override
     public boolean save(Author author) throws SQLException {
-        if (author.getAuthorName() == null && author.getDateAdded() == null) {
+        if (author.getName() == null && author.getDateAdded() == null) {
             return false;
         }
         List<String> columns = Arrays.asList(
@@ -56,10 +56,10 @@ public class AuthorDAO implements DAO<Author> {
                 DATE_ADDED
         );
         List values = Arrays.asList(
-                author.getAuthorName(),
+                author.getName(),
                 author.getDateAdded()
         );
-        if (author.getAuthorName() == null) {
+        if (author.getName() == null) {
             columns.remove(AUTHOR_NAME);
             values.remove(null);
         }
@@ -68,7 +68,7 @@ public class AuthorDAO implements DAO<Author> {
             values.remove(null);
         }
         openConnection();
-        boolean result = db.updateRecord(TABLE_NAME, columns, values, AUTHOR_ID, author.getAuthorId());
+        boolean result = db.updateRecord(TABLE_NAME, columns, values, AUTHOR_ID, author.getId());
         closeConnection();
         return result;
     }

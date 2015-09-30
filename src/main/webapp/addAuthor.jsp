@@ -17,21 +17,11 @@
     </head>
     <body>
         <header>
-            <h1>Administration</h1>
+            <h1>Add Author</h1>
         </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="author?action=list">View Authors</a></li>
-                <li><a href="author?action=add">Add Author</a></li>
-                <li><a href="author?action=update">Update Author</a></li>
-                <li><a href="author?action=delete">Delete Author</a></li>
-            </ul>
-        </nav>
-        <h2>Add Author</h2>
         <form action="author?action=add" method="POST">
-            <label for="authorName">Name</label>
-            <input type="text" name="authorName" id="authorName" value="${param.authorName}" autofocus required>
+            <label for="name">Name</label>
+            <input type="text" name="name" id="authorName" value="${param.authorName}" autofocus required>
             <input type="submit" value="Submit">
         </form>
     </body>

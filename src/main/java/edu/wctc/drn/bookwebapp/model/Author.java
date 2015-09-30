@@ -7,36 +7,42 @@ import java.util.Date;
  */
 public class Author {
 
-    private Integer authorId;
-    private String authorName;
+    private Integer id;
+    private String name;
     private Date dateAdded;
 
-    public Author(String authorName, Date dateAdded) {
-        this.authorId = null;
-        this.authorName = authorName;
+    public Author(String name) {
+        this.id = null;
+        this.name = name;
+        this.dateAdded = new Date();
+    }
+    
+    public Author(String name, Date dateAdded) {
+        this.id = null;
+        this.name = name;
         this.dateAdded = dateAdded;
     }
     
-    public Author(int authorId, String authorName, Date dateAdded) {
-        this.authorId = authorId;
-        this.authorName = authorName;
+    public Author(int id, String name, Date dateAdded) {
+        this.id = id;
+        this.name = name;
         this.dateAdded = dateAdded;
     }
 
-    public int getAuthorId() {
-        return authorId;
+    public int getId() {
+        return id;
     }
 
-    public void setAuthorId(int authorId) {
-        this.authorId = authorId;
+    public void setId(int authorId) {
+        this.id = authorId;
     }
 
-    public String getAuthorName() {
-        return authorName;
+    public String getName() {
+        return name;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setName(String authorName) {
+        this.name = authorName;
     }
 
     public Date getDateAdded() {
@@ -49,7 +55,7 @@ public class Author {
     
     @Override
     public String toString() {
-        return authorId + " " + authorName + " " + dateAdded;
+        return id + " " + name + " " + dateAdded;
     }
     
 }

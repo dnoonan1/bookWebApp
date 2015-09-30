@@ -6,36 +6,27 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>BookWebApp | Update Author</title>
+        <title>BookWebApp | Edit Author</title>
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
         <header>
-            <h1>Administration</h1>
+            <h1>Edit Author</h1>
         </header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="author?action=list">View Authors</a></li>
-                <li><a href="author?action=add">Add Author</a></li>
-                <li><a href="author?action=update">Update Author</a></li>
-                <li><a href="author?action=delete">Delete Author</a></li>
-            </ul>
-        </nav>
-        <h2>Update Author</h2>
-        <form action="author?action=update" method="POST">
-            <label for="authorId">ID</label>
-            <input type="number" name="authorId" id="authorId" value="${param.authorId}" autofocus required>
-            <label for="authorName">Name</label>
-            <input type="text" name="authorName" id="authorName" value="${param.authorName}" required>
+        <form action="author?action=edit" method="POST">
+            <label for="id">ID: ${param.id}</label>
+            <input type="hidden" id="id" name="id" value="${param.id}">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" value="${author.name}" required>
             <label for="dateAdded">Date Added</label>
-            <input type="date" name="dateAdded" id="dateAdded" value="${param.dateAdded}" placeholder="mm/dd/yyyy" required>
+            <input type="text" id="dateAdded" name="dateAdded" value="<fmt:formatDate pattern="MM/dd/yyyy" value="${author.dateAdded}"></fmt:formatDate>" placeholder="mm/dd/yyyy" required>
             <input type="submit" value="Submit">
         </form>
     </body>
@@ -43,7 +34,7 @@
         <p class="error">Sorry, data could not be retrieved:<br>
            ${errMsg}</p>
     </c:if>
-    <c:if test="${author != null}">
+    <c:if test="${updated != null}">
         <p class="update">Author updated!</p>
         <a href="author?action=list">View All Authors</a>
     </c:if>

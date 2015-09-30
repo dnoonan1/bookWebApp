@@ -37,24 +37,22 @@ public class AuthorController extends HttpServlet {
 
     private static final String LIST_PAGE = "/listAuthors.jsp";
     private static final String ADD_PAGE = "/addAuthor.jsp";
-    private static final String UPDATE_PAGE = "/updateAuthor.jsp";
-    private static final String DELETE_PAGE = "/deleteAuthor.jsp";
+    private static final String EDIT_PAGE = "/updateAuthor.jsp";
+//    private static final String DELETE_PAGE = "/deleteAuthor.jsp";
 
     private static final String LIST_ACTION = "list";
     private static final String ADD_ACTION = "add";
-    private static final String UPDATE_ACTION = "update";
+    private static final String EDIT_ACTION = "edit";
     private static final String DELETE_ACTION = "delete";
 
     private static final String ACTION_PARAM = "action";
-    private static final String AUTHOR_NAME_PARAM = "authorName";
-    private static final String AUTHOR_ID_PARAM = "authorId";
+    private static final String ID_PARAM = "id";
+    private static final String NAME_PARAM = "name";
     private static final String DATE_ADDED_PARAM = "dateAdded";
 
     private static final String AUTHOR_ATTR = "author";
     private static final String AUTHORS_ATTR = "authors";
-    private static final String AUTHOR_ID_ATTR = "authorId";
-    private static final String AUTHOR_NAME_ATTR = "authorName";
-    private static final String DATE_ADDED_ATTR = "dateAdded";
+    private static final String UPDATED_ATTR = "updated";
     private static final String ERR_MSG_ATTR = "errMsg";
 
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
@@ -113,51 +111,66 @@ public class AuthorController extends HttpServlet {
             
             AuthorService authorService = new AuthorService(authorDAO);
 
-            if (action.equals(LIST_ACTION)) {
-
-                List<Author> authors;
-                authors = authorService.getAllAuthors();
-                request.setAttribute(AUTHORS_ATTR, authors);
-                destination = LIST_PAGE;
-
-            } else if (action.equals(ADD_ACTION)) {
-
-                String name = request.getParameter(AUTHOR_NAME_PARAM);
-                if (name != null) {
-                    Author author = new Author(name, new Date());
-                    authorService.addAuthor(author);
-                    request.setAttribute(AUTHOR_ATTR, author);
-                }
-                destination = ADD_PAGE;
-
-            } else if (action.equals(UPDATE_ACTION)) {
-
-                String sId = request.getParameter(AUTHOR_ID_PARAM);
-                if (sId != null) {
+            Author author;
+            List<Author> authors;
+            String sId;
+            String name;
+            String sDate;
+            Date dateAdded;
+            switch (action) {
+                
+                case LIST_ACTION:
+                    authors = authorService.getAllAuthors();
+                    request.setAttribute(AUTHORS_ATTR, authors);
+                    destination = LIST_PAGE;
+                    break;
+                    
+                case ADD_ACTION:
+                    name = request.getParameter(NAME_PARAM);
+                    if (name == null) {
+                        destination = ADD_PAGE;
+                    } else {
+                        authorService.addAuthor(new Author(name));
+                        authors = authorService.getAllAuthors();
+                        request.setAttribute(AUTHORS_ATTR, authors);
+                        destination = LIST_PAGE;
+                    }
+                    break;
+                    
+                case EDIT_ACTION:
+                    sId = request.getParameter(ID_PARAM);
                     int id = Integer.parseInt(sId);
-                    String name = request.getParameter(AUTHOR_NAME_PARAM);
-                    String sDate = request.getParameter(DATE_ADDED_PARAM);
-                    SimpleDateFormat df = new SimpleDateFormat(DATE_PATTERN);
-                    Date dateAdded = df.parse(sDate);
-                    Author author = new Author(id, name, dateAdded);
+                    name = request.getParameter(NAME_PARAM);
+                    sDate = request.getParameter(DATE_ADDED_PARAM);
+                    if (name == null || sDate == null) {
+                        author = authorService.getAuthorById(id);   
+                    } else {
+                        SimpleDateFormat df = new SimpleDateFormat(DATE_PATTERN);
+                        dateAdded = df.parse(sDate);
+                        author = new Author(id, name, dateAdded);
+                        authorService.saveAuthor(author);
+                        request.setAttribute(UPDATED_ATTR, true);
+                    }
                     request.setAttribute(AUTHOR_ATTR, author);
-                    authorService.saveAuthor(author);
-                }
-                destination = UPDATE_PAGE;
-
-            } else if (action.equals(DELETE_ACTION)) {
-
-                String sId = request.getParameter(AUTHOR_ID_PARAM);
-                if (sId != null) {
-                    int id = Integer.parseInt(sId);
-                    request.setAttribute(AUTHOR_ID_ATTR, id);
-                    authorService.deleteAuthor(id);
-                }
-                destination = DELETE_PAGE;
-
-            } else {
-                // No param identified in request, must be an error
-                request.setAttribute(ERR_MSG_ATTR, NO_PARAM_ERR_MSG);
+                    destination = EDIT_PAGE;
+                    break;
+                        
+                case DELETE_ACTION:
+                    sId = request.getParameter(ID_PARAM);
+                    if (sId != null) {
+                        String[] ids = sId.split(",");
+                        for (String s : ids) {
+                            authorService.deleteAuthor(Integer.parseInt(s));
+                        }
+                    }
+                    authors = authorService.getAllAuthors();
+                    request.setAttribute(AUTHORS_ATTR, authors);
+                    destination = LIST_PAGE;
+                    break;
+                
+                default:
+                    // No param identified in request, must be an error
+                    request.setAttribute(ERR_MSG_ATTR, NO_PARAM_ERR_MSG);
             }
 
         } catch (Exception e) {
