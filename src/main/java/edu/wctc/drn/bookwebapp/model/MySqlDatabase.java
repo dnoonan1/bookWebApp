@@ -9,8 +9,7 @@ import java.util.*;
 public class MySqlDatabase implements Database {
     
     // Will this ever change?
-    private static final String driverClassName = "com.mysql.jdbc.Driver";
-    
+    private final String driverClassName;
     private final String url;
     private final String userName;
     private final String password;
@@ -34,17 +33,29 @@ public class MySqlDatabase implements Database {
     private static final String PARAMETER = "?";
     private static final char SEMICOLON = ';';
 
-    public MySqlDatabase(String url, String userName, String password)
+    public MySqlDatabase(String driverClassName, String url, String userName, String password)
             throws ClassNotFoundException, SQLException {
         Class.forName(driverClassName);
+        this.driverClassName = driverClassName;
         this.url = url;
         this.userName = userName;
         this.password = password;
-        /* Try connecting to database on construction, rather than waiting
-           until a CRUD operation is attempted. I.e., fail early if the url,  
-           userName, or password are incorrect. */
-        openConnection();
-        closeConnection();
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
     }
     
     @Override

@@ -2,10 +2,15 @@ package edu.wctc.drn.bookwebapp.controller;
 
 import edu.wctc.drn.bookwebapp.model.*;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,9 +26,12 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthorController extends HttpServlet {
 
     // NO MAGIC NUMBERS!
-    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/book";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "admin";
+    private static final String DATABASE = "database";
+    private static final String DRIVER_CLASS_NAME = "database.driverClassName";
+    private static final String DATABASE_URL = "database.url";
+    private static final String USER_NAME = "database.userName";
+    private static final String PASSWORD = "database.password";
+    private static final String DAO_CLASS_NAME = "dao.author";
 
     private static final String DATE_PATTERN = "MM/dd/yyyy";
 
@@ -66,15 +74,48 @@ public class AuthorController extends HttpServlet {
 
         String destination = LIST_PAGE;
         String action = request.getParameter(ACTION_PARAM);
-
+        
+        ServletContext context = this.getServletContext();
+        String dbClassName = context.getInitParameter(DATABASE);
+        String driverClassName = context.getInitParameter(DRIVER_CLASS_NAME);
+        String url = context.getInitParameter(DATABASE_URL);
+        String userName = context.getInitParameter(USER_NAME);
+        String password = context.getInitParameter(PASSWORD);
+        String daoClassName = context.getInitParameter(DAO_CLASS_NAME);
+        
         try {
-            Database db = new MySqlDatabase(DATABASE_URL, USERNAME, PASSWORD);
-            DAO<Author> authorDAO = new AuthorDAO(db);
+            
+            // Old Way (without DI)
+//            Database db = new MySqlDatabase(
+//                    "com.mysql.jdbc.Driver",
+//                    "jdbc:mysql://localhost:3306/book",
+//                    "root", "admin"
+//            );
+//            DAO<Author> authorDAO = new AuthorDAO(db);
+            
+            // New Way (with DI)
+            Class dbClass = Class.forName(dbClassName);
+            Class[] params = {
+                driverClassName.getClass(),
+                url.getClass(),
+                userName.getClass(),
+                password.getClass()
+            };
+            Object[] args = {driverClassName, url, userName, password};
+            Database db = (Database)dbClass.getConstructor(params).newInstance(args);
+            
+            Class daoClass = Class.forName(daoClassName);
+            params = new Class[] {Database.class};
+            args = new Object[] {db};
+            DAO<Author> authorDAO = (DAO<Author>)daoClass
+                    .getConstructor(params)
+                    .newInstance(args);
+            
             AuthorService authorService = new AuthorService(authorDAO);
 
             if (action.equals(LIST_ACTION)) {
 
-                List<Author> authors = null;
+                List<Author> authors;
                 authors = authorService.getAllAuthors();
                 request.setAttribute(AUTHORS_ATTR, authors);
                 destination = LIST_PAGE;
@@ -120,7 +161,10 @@ public class AuthorController extends HttpServlet {
             }
 
         } catch (Exception e) {
-            request.setAttribute(ERR_MSG_ATTR, e.getCause().getMessage());
+            request.setAttribute(ERR_MSG_ATTR, e.getMessage());
+            try (PrintWriter out = response.getWriter()) {
+                e.printStackTrace(out);
+            }
         }
 
         // Forward to destination page
