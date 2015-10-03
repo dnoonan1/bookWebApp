@@ -8,7 +8,6 @@ import java.util.*;
  */
 public class MySqlDatabase implements Database {
     
-    // Will this ever change?
     private final String driverClassName;
     private final String url;
     private final String userName;
@@ -115,7 +114,7 @@ public class MySqlDatabase implements Database {
     }
     
     @Override
-    public Map<String, Object> getByPrimaryKey(String tableName,
+    public Map<String, Object> getByKey(String tableName,
             String primaryKeyName, Object primaryKeyValue)
             throws SQLException {
         
@@ -137,7 +136,7 @@ public class MySqlDatabase implements Database {
             } else {
                 return null;
             }
-        } finally {}
+        }
         
     }
     
@@ -169,7 +168,9 @@ public class MySqlDatabase implements Database {
     
     /* CRUD - Delete */
     
-    // Statement
+    // This method uses Statement to execute the update. See below for the new
+    // and improved version which uses PreparedStatement.
+    
 //    public boolean deleteByPrimaryKey(String tableName, String primaryKeyName,
 //            Object primaryKeyValue) throws SQLException {
 //        
@@ -198,15 +199,15 @@ public class MySqlDatabase implements Database {
     
     // Prepared Statement
     @Override
-    public boolean deleteByPrimaryKey(String tableName, String primaryKeyName,
-            Object primaryKeyValue) throws SQLException {
+    public boolean deleteByPrimaryKey(String tableName, String key, Object value)
+            throws SQLException {
         
         boolean recordDeleted;
         String sql = DELETE_FROM + tableName
-                + WHERE + primaryKeyName + EQUALS + PARAMETER + SEMICOLON;
+                + WHERE + key + EQUALS + PARAMETER + SEMICOLON;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setObject(1, primaryKeyValue);
+            pstmt.setObject(1, value);
             recordDeleted = pstmt.executeUpdate() == SUCCESS;
             return recordDeleted;
         } catch (SQLException e) {

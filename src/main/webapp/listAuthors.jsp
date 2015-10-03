@@ -26,18 +26,17 @@
                 <h1>Author List</h1>
             </header>
             
+            <form id="listAction" action="author?action=list" method="POST"></form>
+            <form id="addAction" action="author?action=add" method="POST"></form>
+            
             <div class="controls">
-                <a href="author?action=list">
-                    <button>
-                        <span class="glyphicon glyphicon-refresh" title="Refresh"></span>
-                    </button>
-                </a>
-                <a href="author?action=add">
-                    <button>
-                        <span class="glyphicon glyphicon-plus" title="Add Author"></span>
-                    </button>
-                </a>
-                <button type="submit" form="selection">
+                <button form="listAction">
+                    <span class="glyphicon glyphicon-refresh" title="Refresh"></span>
+                </button>
+                <button form="addAction">
+                    <span class="glyphicon glyphicon-plus" title="Add Author"></span>
+                </button>
+                <button form="selection">
                     <span class="glyphicon glyphicon-trash" title="Delete Selected"></span>
                 </button>
             </div>
@@ -46,7 +45,7 @@
             <table>
                 <tr>
                     <th class="select">
-                        <input type="checkbox" id="selectAll" title="Select/Deselect All">
+                        <input type="checkbox" class="selectAll" title="Select/Deselect All">
                     </th>
                     <th>ID</th>
                     <th>Name</th>
@@ -54,27 +53,51 @@
                     <th class="text-center">Edit / Delete</th>
                 </tr>
             <c:forEach var="a" items="${authors}">
-                <td class="select">
-                    <input type="checkbox" class="checkbox" name="id" value="${a.id}">
-                </td>
-                <td>${a.id}</td>
-                <td>${a.name}</td>
-                <td class="text-right">
-                    <fmt:formatDate pattern="MM/dd/yyyy" value="${a.dateAdded}"></fmt:formatDate>
-                </td>
-                <td class="text-center">
-                    <a href="author?action=edit&id=${a.id}">
-                        <span class="glyphicon glyphicon-edit" title="Edit"></span>
-                    </a>
-                    &nbsp;
-                    <a href="author?action=delete&id=${a.id}">
-                        <span class="glyphicon glyphicon-trash" title="Delete"></span>
-                    </a>
-                </td>
-            </tr>
+                <form id="edit-${a.id}" action="author?action=delete&id=${a.id}"></form>
+                <form id="delete-${a.id}" action="author?action=edit&id=${a.id}"></form>
+                <tr>
+                    <td class="select">
+                        <input type="checkbox" class="checkbox" name="id" value="${a.id}">
+                    </td>
+                    <td>${a.id}</td>
+                    <td>${a.name}</td>
+                    <td class="text-right">
+                        <fmt:formatDate pattern="MM/dd/yyyy" value="${a.dateAdded}"></fmt:formatDate>
+                    </td>
+                    <td class="text-center">
+                        <button form="delete-${a.id}">
+                            <span class="glyphicon glyphicon-edit" title="Edit"></span>
+                        </button>
+                        <button form="edit-${a.id}">
+                            <span class="glyphicon glyphicon-trash" title="Delete"></span>
+                        </button>
+                    </td>
+                </tr>
             </c:forEach>
+                <tr>
+                    <th class="select">
+                        <input type="checkbox" class="selectAll" title="Select/Deselect All">
+                    </th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th class="text-right">Date Added</th>
+                    <th class="text-center">Edit / Delete</th>
+                </tr>
             </table>
             </form>
+            
+            <div class="controls">
+                <button form="listAction">
+                    <span class="glyphicon glyphicon-refresh" title="Refresh"></span>
+                </button>
+                <button form="addAction">
+                    <span class="glyphicon glyphicon-plus" title="Add Author"></span>
+                </button>
+                <button form="selection">
+                    <span class="glyphicon glyphicon-trash" title="Delete Selected"></span>
+                </button>
+            </div>
+            
             <c:if test="${errMsg != null}">
                 <p class="error">Sorry, data could not be retrieved:<br>
                     ${errMsg}
@@ -83,9 +106,10 @@
         </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script>
+        // Add click event to .selectAll to check/uncheck all checkboxes
         $(function() {
-            $('#selectAll').click(function() {
-                $('.checkbox').prop("checked", $('#selectAll').prop("checked"));
+            $('.selectAll').click(function() {
+                $('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
             });
         });
     </script>

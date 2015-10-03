@@ -156,12 +156,9 @@ public class AuthorController extends HttpServlet {
                     break;
                         
                 case DELETE_ACTION:
-                    sId = request.getParameter(ID_PARAM);
-                    if (sId != null) {
-                        String[] ids = sId.split(",");
-                        for (String s : ids) {
-                            authorService.deleteAuthor(Integer.parseInt(s));
-                        }
+                    String[] ids = request.getParameterValues(ID_PARAM);
+                    for (String s : ids) {
+                        authorService.deleteAuthor(Integer.parseInt(s));
                     }
                     authors = authorService.getAllAuthors();
                     request.setAttribute(AUTHORS_ATTR, authors);

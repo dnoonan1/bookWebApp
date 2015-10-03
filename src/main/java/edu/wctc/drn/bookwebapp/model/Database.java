@@ -15,7 +15,7 @@ public interface Database {
     List<Map<String, Object>> getAllRecords(String tableName)
             throws SQLException;
     
-    Map<String, Object> getByPrimaryKey(String tableName,
+    Map<String, Object> getByKey(String tableName,
             String primaryKeyName, Object primaryKeyValue) throws SQLException;
     
     boolean insertRecord(String tableName,

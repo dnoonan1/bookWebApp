@@ -93,7 +93,7 @@ public class AuthorDAO implements DAO<Author> {
     @Override
     public Author getById(Object id) throws SQLException {
         openConnection();
-        Map<String, Object> record = db.getByPrimaryKey(TABLE_NAME, AUTHOR_ID, id);
+        Map<String, Object> record = db.getByKey(TABLE_NAME, AUTHOR_ID, id);
         closeConnection();
         if (record != null) {
             Object authorId = record.get(AUTHOR_ID);
