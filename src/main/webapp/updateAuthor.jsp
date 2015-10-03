@@ -21,8 +21,8 @@
             <h1>Edit Author</h1>
         </header>
         <form action="author?action=edit" method="POST">
-            <label for="id">ID: ${param.id}</label>
-            <input type="hidden" id="id" name="id" value="${param.id}">
+            <label for="id">ID: ${author.id}</label>
+            <input type="hidden" id="id" name="id" value="${author.id}">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" value="${author.name}" required>
             <label for="dateAdded">Date Added</label>

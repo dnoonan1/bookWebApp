@@ -3,12 +3,14 @@ package edu.wctc.drn.bookwebapp.controller;
 import edu.wctc.drn.bookwebapp.model.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -16,6 +18,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 /**
  * The main controller for author-related activities
@@ -57,6 +60,70 @@ public class AuthorController extends HttpServlet {
 
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
 
+    private ServletContext servletContext;
+    private AuthorService authorService;
+    private String dbClassName;
+    private String driverClassName;
+    private String url;
+    private String userName;
+    private String password;
+    private String daoClassName;
+    
+    @Override
+    public void init() throws ServletException {
+        servletContext = this.getServletContext();
+        dbClassName = servletContext.getInitParameter(DATABASE);
+        driverClassName = servletContext.getInitParameter(DRIVER_CLASS_NAME);
+        url = servletContext.getInitParameter(DATABASE_URL);
+        userName = servletContext.getInitParameter(USER_NAME);
+        password = servletContext.getInitParameter(PASSWORD);
+        daoClassName = servletContext.getInitParameter(DAO_CLASS_NAME);
+    }
+    
+    public void initAuthorService()
+            throws ClassNotFoundException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NamingException {
+            // Old Way (without DI)
+        
+//            Database db = new MySqlDatabase(
+//                    "com.mysql.jdbc.Driver",
+//                    "jdbc:mysql://localhost:3306/book",
+//                    "root", "admin"
+//            );
+//            DAO<Author> authorDAO = new AuthorDAO(db);
+            
+            // New Way (with DI)
+            Class dbClass = Class.forName(dbClassName);
+            Class[] params = {
+                driverClassName.getClass(),
+                url.getClass(),
+                userName.getClass(),
+                password.getClass()
+            };
+            Constructor constructor = null;
+            try {
+                constructor = dbClass.getConstructor(params);
+            } catch (NoSuchMethodException e) {
+                // Just catch exception; constructor will remain null
+            }
+            Database db;
+            if (constructor != null) {
+                Object[] args = {driverClassName, url, userName, password};
+                db = (Database)constructor.newInstance(args);
+            } else { // Use DataSource object
+                Context ctx = new InitialContext();
+                DataSource ds = (DataSource)ctx.lookup("jdbc/book");
+                db = (Database)dbClass.getConstructor(DataSource.class).newInstance(ds);
+            }
+            
+            Class daoClass = Class.forName(daoClassName);
+            DAO<Author> authorDAO = (DAO<Author>)daoClass
+                    .getConstructor(Database.class)
+                    .newInstance(db);
+            
+            authorService = new AuthorService(authorDAO);
+    }
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -73,50 +140,38 @@ public class AuthorController extends HttpServlet {
         String destination = LIST_PAGE;
         String action = request.getParameter(ACTION_PARAM);
         
-        ServletContext context = this.getServletContext();
-        String dbClassName = context.getInitParameter(DATABASE);
-        String driverClassName = context.getInitParameter(DRIVER_CLASS_NAME);
-        String url = context.getInitParameter(DATABASE_URL);
-        String userName = context.getInitParameter(USER_NAME);
-        String password = context.getInitParameter(PASSWORD);
-        String daoClassName = context.getInitParameter(DAO_CLASS_NAME);
-        
         try {
-            
-            // Old Way (without DI)
-//            Database db = new MySqlDatabase(
-//                    "com.mysql.jdbc.Driver",
-//                    "jdbc:mysql://localhost:3306/book",
-//                    "root", "admin"
-//            );
-//            DAO<Author> authorDAO = new AuthorDAO(db);
-            
-            // New Way (with DI)
-            Class dbClass = Class.forName(dbClassName);
-            Class[] params = {
-                driverClassName.getClass(),
-                url.getClass(),
-                userName.getClass(),
-                password.getClass()
-            };
-            Object[] args = {driverClassName, url, userName, password};
-            Database db = (Database)dbClass.getConstructor(params).newInstance(args);
-            
-            Class daoClass = Class.forName(daoClassName);
-            params = new Class[] {Database.class};
-            args = new Object[] {db};
-            DAO<Author> authorDAO = (DAO<Author>)daoClass
-                    .getConstructor(params)
-                    .newInstance(args);
-            
-            AuthorService authorService = new AuthorService(authorDAO);
 
+//            Class dbClass = Class.forName(dbClassName);
+//            Class[] params = {
+//                driverClassName.getClass(),
+//                url.getClass(),
+//                userName.getClass(),
+//                password.getClass()
+//            };
+//            Object[] args = {driverClassName, url, userName, password};
+//            Database db = (Database)dbClass.getConstructor(params).newInstance(args);
+//            
+//            Class daoClass = Class.forName(daoClassName);
+//            params = new Class[] {Database.class};
+//            args = new Object[] {db};
+//            DAO<Author> authorDAO = (DAO<Author>)daoClass
+//                    .getConstructor(params)
+//                    .newInstance(args);
+//            
+//            authorService = new AuthorService(authorDAO);
+            
+            if (authorService == null) {
+                initAuthorService();
+            }
+            
             Author author;
             List<Author> authors;
             String sId;
             String name;
             String sDate;
             Date dateAdded;
+            
             switch (action) {
                 
                 case LIST_ACTION:

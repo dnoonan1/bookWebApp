@@ -26,22 +26,22 @@
                 <h1>Author List</h1>
             </header>
             
-            <form id="listAction" action="author?action=list" method="POST"></form>
-            <form id="addAction" action="author?action=add" method="POST"></form>
+            <form id="refresh" action="author?action=list" method="POST"></form>
+            <form id="add-author" action="author?action=add" method="POST"></form>
             
             <div class="controls">
-                <button form="listAction">
+                <button form="refresh">
                     <span class="glyphicon glyphicon-refresh" title="Refresh"></span>
                 </button>
-                <button form="addAction">
+                <button form="add-author">
                     <span class="glyphicon glyphicon-plus" title="Add Author"></span>
                 </button>
-                <button form="selection">
+                <button form="delete-selection">
                     <span class="glyphicon glyphicon-trash" title="Delete Selected"></span>
                 </button>
             </div>
             
-            <form id="selection" action="author?action=delete" method="POST">
+            <form id="delete-selection" action="author?action=delete" method="POST">
             <table>
                 <tr>
                     <th class="select">
@@ -53,8 +53,8 @@
                     <th class="text-center">Edit / Delete</th>
                 </tr>
             <c:forEach var="a" items="${authors}">
-                <form id="edit-${a.id}" action="author?action=delete&id=${a.id}"></form>
-                <form id="delete-${a.id}" action="author?action=edit&id=${a.id}"></form>
+                <form id="edit-${a.id}" action="author?action=edit&id=${a.id}" method="POST"></form>
+                <form id="delete-${a.id}" action="author?action=delete&id=${a.id}" method="POST"></form>
                 <tr>
                     <td class="select">
                         <input type="checkbox" class="checkbox" name="id" value="${a.id}">
@@ -65,10 +65,10 @@
                         <fmt:formatDate pattern="MM/dd/yyyy" value="${a.dateAdded}"></fmt:formatDate>
                     </td>
                     <td class="text-center">
-                        <button form="delete-${a.id}">
+                        <button form="edit-${a.id}">
                             <span class="glyphicon glyphicon-edit" title="Edit"></span>
                         </button>
-                        <button form="edit-${a.id}">
+                        <button form="delete-${a.id}">
                             <span class="glyphicon glyphicon-trash" title="Delete"></span>
                         </button>
                     </td>
@@ -87,13 +87,13 @@
             </form>
             
             <div class="controls">
-                <button form="listAction">
+                <button form="refresh">
                     <span class="glyphicon glyphicon-refresh" title="Refresh"></span>
                 </button>
-                <button form="addAction">
+                <button form="add-author">
                     <span class="glyphicon glyphicon-plus" title="Add Author"></span>
                 </button>
-                <button form="selection">
+                <button form="delete-selection">
                     <span class="glyphicon glyphicon-trash" title="Delete Selected"></span>
                 </button>
             </div>
