@@ -2,7 +2,6 @@ package edu.wctc.drn.bookwebapp.controller;
 
 import edu.wctc.drn.bookwebapp.model.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
@@ -18,6 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 /**
@@ -42,11 +42,13 @@ public class AuthorController extends HttpServlet {
     private static final String ADD_PAGE = "/addAuthor.jsp";
     private static final String EDIT_PAGE = "/updateAuthor.jsp";
 //    private static final String DELETE_PAGE = "/deleteAuthor.jsp";
+    private static final String STATS_PAGE = "/authorStats.jsp";
 
     private static final String LIST_ACTION = "list";
     private static final String ADD_ACTION = "add";
     private static final String EDIT_ACTION = "edit";
     private static final String DELETE_ACTION = "delete";
+    private static final String STATS_ACTION = "stats";
 
     private static final String ACTION_PARAM = "action";
     private static final String ID_PARAM = "id";
@@ -55,12 +57,14 @@ public class AuthorController extends HttpServlet {
 
     private static final String AUTHOR_ATTR = "author";
     private static final String AUTHORS_ATTR = "authors";
+    private static final String TIMESTAMP_ATTR = "timestamp";
     private static final String UPDATED_ATTR = "updated";
+    private static final String STATS_ATTR = "stats";
     private static final String ERR_MSG_ATTR = "errMsg";
 
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
 
-    private ServletContext servletContext;
+    private ServletContext context;
     private AuthorService authorService;
     private String dbClassName;
     private String driverClassName;
@@ -71,13 +75,13 @@ public class AuthorController extends HttpServlet {
     
     @Override
     public void init() throws ServletException {
-        servletContext = this.getServletContext();
-        dbClassName = servletContext.getInitParameter(DATABASE);
-        driverClassName = servletContext.getInitParameter(DRIVER_CLASS_NAME);
-        url = servletContext.getInitParameter(DATABASE_URL);
-        userName = servletContext.getInitParameter(USER_NAME);
-        password = servletContext.getInitParameter(PASSWORD);
-        daoClassName = servletContext.getInitParameter(DAO_CLASS_NAME);
+        context = this.getServletContext();
+        dbClassName = context.getInitParameter(DATABASE);
+        driverClassName = context.getInitParameter(DRIVER_CLASS_NAME);
+        url = context.getInitParameter(DATABASE_URL);
+        userName = context.getInitParameter(USER_NAME);
+        password = context.getInitParameter(PASSWORD);
+        daoClassName = context.getInitParameter(DAO_CLASS_NAME);
     }
     
     public void initAuthorService()
@@ -135,8 +139,14 @@ public class AuthorController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         response.setContentType("text/html;charset=UTF-8");
-
+        HttpSession session = request.getSession();
+        AuthorStats stats = (AuthorStats)session.getAttribute(STATS_ATTR);
+        if (stats == null) {
+            stats = new AuthorStats();
+        }
+        
         String destination = LIST_PAGE;
         String action = request.getParameter(ACTION_PARAM);
         
@@ -171,25 +181,30 @@ public class AuthorController extends HttpServlet {
             String name;
             String sDate;
             Date dateAdded;
+            Date timestamp;
             
             switch (action) {
                 
                 case LIST_ACTION:
                     authors = authorService.getAllAuthors();
                     request.setAttribute(AUTHORS_ATTR, authors);
+                    stats.setAuthorCount(authors.size());
                     destination = LIST_PAGE;
                     break;
                     
                 case ADD_ACTION:
                     name = request.getParameter(NAME_PARAM);
-                    if (name == null) {
-                        destination = ADD_PAGE;
-                    } else {
-                        authorService.addAuthor(new Author(name));
-                        authors = authorService.getAllAuthors();
-                        request.setAttribute(AUTHORS_ATTR, authors);
-                        destination = LIST_PAGE;
+                    if (name != null) {
+                        author = new Author(name);
+                        authorService.addAuthor(author);
+                        timestamp = new Date();
+//                        authors = authorService.getAllAuthors();
+//                        request.setAttribute(AUTHORS_ATTR, authors);
+                        request.setAttribute(AUTHOR_ATTR, author);
+                        request.setAttribute(TIMESTAMP_ATTR, timestamp);
+                        stats.addAuthor();
                     }
+                    destination = ADD_PAGE;
                     break;
                     
                 case EDIT_ACTION:
@@ -204,7 +219,11 @@ public class AuthorController extends HttpServlet {
                         dateAdded = df.parse(sDate);
                         author = new Author(id, name, dateAdded);
                         authorService.saveAuthor(author);
+                        timestamp = new Date();
+                        Date d = new Date();
                         request.setAttribute(UPDATED_ATTR, true);
+                        request.setAttribute(TIMESTAMP_ATTR, timestamp);
+                        stats.editAuthor();
                     }
                     request.setAttribute(AUTHOR_ATTR, author);
                     destination = EDIT_PAGE;
@@ -214,10 +233,15 @@ public class AuthorController extends HttpServlet {
                     String[] ids = request.getParameterValues(ID_PARAM);
                     for (String s : ids) {
                         authorService.deleteAuthor(Integer.parseInt(s));
+                        stats.deleteAuthor();
                     }
                     authors = authorService.getAllAuthors();
                     request.setAttribute(AUTHORS_ATTR, authors);
                     destination = LIST_PAGE;
+                    break;
+                
+                case STATS_ACTION:
+                    destination = STATS_PAGE;
                     break;
                 
                 default:
@@ -227,11 +251,14 @@ public class AuthorController extends HttpServlet {
 
         } catch (Exception e) {
             request.setAttribute(ERR_MSG_ATTR, e.getMessage());
-            try (PrintWriter out = response.getWriter()) {
+            // This will print the stack trace on the response page
+            /*try (PrintWriter out = response.getWriter()) {
                 e.printStackTrace(out);
-            }
+            }*/
         }
 
+        session.setAttribute(STATS_ATTR, stats);
+        
         // Forward to destination page
         RequestDispatcher dispatcher
                 = getServletContext().getRequestDispatcher(destination);
