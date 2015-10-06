@@ -30,6 +30,8 @@ public class AuthorController extends HttpServlet {
 
     // NO MAGIC NUMBERS!
     private static final String DATABASE = "database";
+    private static final String DATABASE_JNDI_NAME = "database.jndiName";
+    private static final String DATABASE_CONNECTOR_NAME = "database.connector";
     private static final String DRIVER_CLASS_NAME = "database.driverClassName";
     private static final String DATABASE_URL = "database.url";
     private static final String USER_NAME = "database.userName";
@@ -66,22 +68,11 @@ public class AuthorController extends HttpServlet {
 
     private ServletContext context;
     private AuthorService authorService;
-    private String dbClassName;
-    private String driverClassName;
-    private String url;
-    private String userName;
-    private String password;
-    private String daoClassName;
     
     @Override
     public void init() throws ServletException {
         context = this.getServletContext();
-        dbClassName = context.getInitParameter(DATABASE);
-        driverClassName = context.getInitParameter(DRIVER_CLASS_NAME);
-        url = context.getInitParameter(DATABASE_URL);
-        userName = context.getInitParameter(USER_NAME);
-        password = context.getInitParameter(PASSWORD);
-        daoClassName = context.getInitParameter(DAO_CLASS_NAME);
+        
     }
     
     public void initAuthorService()
@@ -97,7 +88,41 @@ public class AuthorController extends HttpServlet {
 //            DAO<Author> authorDAO = new AuthorDAO(db);
             
             // New Way (with DI)
-            Class dbClass = Class.forName(dbClassName);
+            String dbClassName = context.getInitParameter(DATABASE);
+            String connectorName = context.getInitParameter(DATABASE_CONNECTOR_NAME);
+            String driverClassName = context.getInitParameter(DRIVER_CLASS_NAME);
+            String url = context.getInitParameter(DATABASE_URL);
+            String userName = context.getInitParameter(USER_NAME);
+            String password = context.getInitParameter(PASSWORD);
+            String daoClassName = context.getInitParameter(DAO_CLASS_NAME);
+            
+            // Old
+//            Class dbClass = Class.forName(dbClassName);
+//            Class[] params = {
+//                driverClassName.getClass(),
+//                url.getClass(),
+//                userName.getClass(),
+//                password.getClass()
+//            };
+            
+//            Constructor constructor = null;
+//            try {
+//                constructor = dbClass.getConstructor(params);
+//            } catch (NoSuchMethodException e) {
+//                // Just catch exception; constructor will remain null
+//            }
+//            Database db;
+//            if (constructor != null) {
+//                Object[] args = {driverClassName, url, userName, password};
+//                db = (Database)constructor.newInstance(args);
+//            } else { // Use DataSource object
+//                Context ctx = new InitialContext();
+//                DataSource ds = (DataSource)ctx.lookup("jdbc/book");
+//                db = (Database)dbClass.getConstructor(DataSource.class).newInstance(ds);
+//            }
+            
+            // New
+            Class connectorClass = Class.forName(connectorName);
             Class[] params = {
                 driverClassName.getClass(),
                 url.getClass(),
@@ -106,19 +131,23 @@ public class AuthorController extends HttpServlet {
             };
             Constructor constructor = null;
             try {
-                constructor = dbClass.getConstructor(params);
+                constructor = connectorClass.getConstructor(params);
             } catch (NoSuchMethodException e) {
                 // Just catch exception; constructor will remain null
             }
-            Database db;
+            DatabaseConnector dc;
             if (constructor != null) {
                 Object[] args = {driverClassName, url, userName, password};
-                db = (Database)constructor.newInstance(args);
+                dc = (DatabaseConnector)constructor.newInstance(args);
             } else { // Use DataSource object
                 Context ctx = new InitialContext();
-                DataSource ds = (DataSource)ctx.lookup("jdbc/book");
-                db = (Database)dbClass.getConstructor(DataSource.class).newInstance(ds);
+                String jndiName = context.getInitParameter(DATABASE_JNDI_NAME);
+                DataSource ds = (DataSource)ctx.lookup(jndiName);
+                dc = (DatabaseConnector)connectorClass.getConstructor(DataSource.class).newInstance(ds);
             }
+            
+            Class dbClass = Class.forName(dbClassName);
+            Database db = (Database)dbClass.getConstructor(DatabaseConnector.class).newInstance(dc);
             
             Class daoClass = Class.forName(daoClassName);
             DAO<Author> authorDAO = (DAO<Author>)daoClass

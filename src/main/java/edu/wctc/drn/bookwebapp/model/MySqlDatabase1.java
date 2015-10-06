@@ -6,10 +6,13 @@ import java.util.*;
 /**
  * @author dnoonan1
  */
-public class MySqlDatabase implements Database {
+public class MySqlDatabase1 implements Database {
     
-    private final DatabaseConnector connector;
-    private Connection connection;
+    private final String driverClassName;
+    private final String url;
+    private final String userName;
+    private final String password;
+    private Connection conn;
     
     // For testing whether Create, Update, and Delete operations are successful
     private static final int SUCCESS = 1;
@@ -29,18 +32,39 @@ public class MySqlDatabase implements Database {
     private static final String PARAMETER = "?";
     private static final char SEMICOLON = ';';
 
-    public MySqlDatabase(DatabaseConnector connector) throws SQLException {
-        this.connector = connector;
+    public MySqlDatabase1(String driverClassName, String url, String userName, String password)
+            throws ClassNotFoundException, SQLException {
+        Class.forName(driverClassName);
+        this.driverClassName = driverClassName;
+        this.url = url;
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
     }
     
     @Override
     public final void openConnection() throws SQLException  {
-        connection = connector.getConnection();
+        conn = DriverManager.getConnection(url, userName, password);
     }
     
     @Override
     public final void closeConnection() throws SQLException {
-        connection.close();
+        conn.close();
     }
     
     /*
@@ -71,7 +95,7 @@ public class MySqlDatabase implements Database {
         
         String sql = SELECT_ALL_FROM + tableName + SEMICOLON;        
          
-        try (Statement stmt = connection.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -97,7 +121,7 @@ public class MySqlDatabase implements Database {
         String sql = SELECT_ALL_FROM + tableName
                 + WHERE + primaryKeyName + EQUALS + PARAMETER + SEMICOLON;
             
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setObject(1, primaryKeyValue);
             ResultSet rs = pstmt.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
@@ -182,7 +206,7 @@ public class MySqlDatabase implements Database {
         String sql = DELETE_FROM + tableName
                 + WHERE + key + EQUALS + PARAMETER + SEMICOLON;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setObject(1, value);
             recordDeleted = pstmt.executeUpdate() == SUCCESS;
             return recordDeleted;
@@ -211,7 +235,7 @@ public class MySqlDatabase implements Database {
         sb.append(END_LIST).append(SEMICOLON);
         String sql = sb.toString();
             
-        return connection.prepareStatement(sql);
+        return conn.prepareStatement(sql);
     }
     
     private PreparedStatement buildUpdateStatement(String tableName,
@@ -234,7 +258,7 @@ public class MySqlDatabase implements Database {
                 .append(SEMICOLON);
         
         sql = sb.toString();       
-        return connection.prepareStatement(sql);
+        return conn.prepareStatement(sql);
     }
     
 }

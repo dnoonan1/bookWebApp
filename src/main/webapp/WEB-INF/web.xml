@@ -11,6 +11,12 @@
         <param-value>edu.wctc.drn.bookwebapp.model.MySqlDatabase</param-value>
     </context-param>
     <context-param>
+        <param-name>database.connector</param-name>
+        <param-value>edu.wctc.drn.bookwebapp.model.DataSourceConnector</param-value>
+    </context-param>
+    
+    <!-- Driver Manager Connection Information -->
+    <context-param>
         <param-name>database.driverClassName</param-name>
         <param-value>com.mysql.jdbc.Driver</param-value>
     </context-param>
@@ -25,6 +31,12 @@
     <context-param>
         <param-name>database.password</param-name>
         <param-value>admin</param-value>
+    </context-param>
+    
+    <!-- DataSource Information -->
+    <context-param>
+        <param-name>database.jndiName</param-name>
+        <param-value>jdbc/book</param-value>
     </context-param>
     
     <!-- DAO -->

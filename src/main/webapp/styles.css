@@ -27,10 +27,10 @@ table, th, td {
 }
 
 // Make odd rows blue, even rows white
-tr {
+tr:nth-of-type(odd) {
     background-color: white;
 }
-tr:nth-of-type(odd) {
+tr:nth-of-type(even) {
     background-color: #cff;
 }
 

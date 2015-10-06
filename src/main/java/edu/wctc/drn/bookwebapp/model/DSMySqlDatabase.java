@@ -2,6 +2,9 @@ package edu.wctc.drn.bookwebapp.model;
 
 import java.sql.*;
 import java.util.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 /**
@@ -237,6 +240,22 @@ public class DSMySqlDatabase implements Database {
         
         sql = sb.toString();       
         return conn.prepareStatement(sql);
+    }
+    
+    public static void main(String[] args) throws NamingException, ClassNotFoundException, SQLException {
+        
+        Context ctx = new InitialContext();
+        DataSource ds = (DataSource)ctx.lookup("jdbc/book");
+        DSMySqlDatabase db = new DSMySqlDatabase(ds);
+        
+        db.openConnection();
+        List<Map<String, Object>> records = db.getAllRecords("author");
+        db.closeConnection();
+        
+        for (Map<String, Object> record : records) {
+            System.out.println(record);
+        }
+        
     }
     
 }
