@@ -20,11 +20,19 @@
     </head>
     <body>
         <div class="container">
+            
             <header>
                 <h1>Edit Author</h1>
             </header>
             
+            <form id="refresh" action="author?action=edit&id=${author.id}" method="POST"></form>
+            <form id="action-list" action="author?action=list" method="POST"></form>
+            <form id="action-stats" action="author?action=stats" method="POST"></form>
+            
             <div class="controls">
+                <button form="refresh">
+                    <span class="glyphicon glyphicon-refresh" title="Refresh"></span>
+                </button>
                 <button form="action-list">
                     <span class="glyphicon glyphicon-list-alt" title="List Authors"></span>
                 </button>
@@ -32,9 +40,6 @@
                     <span class="glyphicon glyphicon-stats" title="Statistics"></span>
                 </button>
             </div>
-
-            <form id="action-list" action="author?action=list" method="POST"></form>
-            <form id="action-stats" action="author?action=stats" method="POST"></form>
             
             <form id="update-author" action="author?action=edit" method="POST">
                 <label for="id">ID: ${author.id}</label>
@@ -52,9 +57,9 @@
                 </button>
             </form>
         <c:if test="${errMsg != null}">
-            <div class="error">Sorry, data could not be retrieved:<br>
+            <p class="bg-danger text-danger">Sorry, data could not be retrieved:<br>
                 ${errMsg}
-            </div>
+            </p>
         </c:if>
         <c:if test="${updated != null}">
             <div class="update">

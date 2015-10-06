@@ -64,15 +64,6 @@ td button {
     margin: 10px 0;
 }
 
-.edit button {
-    background-color: transparent;
-    border: none;
-}
-
-.edit-delete {
-    text-align: center;
-}
-
 .error {
     font-weight: bold;
     margin: 10px 0;

@@ -20,10 +20,14 @@
     </head>
     <body>
         <div class="container">
+            
             <header>
                 <h1>Add Author</h1>
             </header>
 
+            <form id="action-list" action="author?action=list" method="POST"></form>
+            <form id="action-stats" action="author?action=stats" method="POST"></form>
+            
             <div class="controls">
                 <button form="action-list">
                     <span class="glyphicon glyphicon-list-alt" title="List Authors"></span>
@@ -33,18 +37,15 @@
                 </button>
             </div>
 
-            <form id="action-list" action="author?action=list" method="POST"></form>
-            <form id="action-stats" action="author?action=stats" method="POST"></form>
-
             <form action="author?action=add" method="POST">
                 <label for="name">Name</label>
                 <input type="text" name="name" id="authorName" value="${param.name}" autofocus required>
                 <input type="submit" value="Create New" class="btn btn-primary">
             </form>
         <c:if test="${errMsg != null}">
-            <div class="bg-danger">Sorry, data could not be retrieved:<br>
+            <p class="bg-danger text-danger">Sorry, data could not be retrieved:<br>
                 ${errMsg}
-            </div>
+            </p>
         </c:if>
         <c:if test="${author != null}">
             <div class="update">

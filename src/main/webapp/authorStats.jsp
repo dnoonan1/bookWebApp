@@ -22,9 +22,13 @@
     </head>
     <body>
         <div class="container">
+            
             <header>
                 <h1>Statistics</h1>
             </header>
+            
+            <form id="refresh" action="author?action=stats" method="POST"></form>
+            <form id="action-list" action="author?action=list" method="POST"></form>
             
             <div class="controls">
                 <button form="refresh">
@@ -34,9 +38,6 @@
                     <span class="glyphicon glyphicon-list-alt" title="List Authors"></span>
                 </button>
             </div>
-            
-            <form id="refresh" action="author?action=stats" method="POST"></form>
-            <form id="action-list" action="author?action=list" method="POST"></form>
             
             <table>
                 <tr>
@@ -63,20 +64,11 @@
             </form>
                         
             <c:if test="${errMsg != null}">
-                <p class="error">Sorry, data could not be retrieved:<br>
+                <p class="bg-danger text-danger">Sorry, data could not be retrieved:<br>
                     ${errMsg}
                 </p>
             </c:if>
+                
         </div>
-        
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script>
-        // Add click event to .selectAll to check/uncheck all checkboxes
-        $(function() {
-            $('.selectAll').click(function() {
-                $('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
-            });
-        });
-    </script>
     </body>
 </html>
