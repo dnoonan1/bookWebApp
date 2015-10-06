@@ -17,7 +17,7 @@ th > input[type="checkbox"], td > input[type="checkbox"] {
     margin: auto;
 }
 
-table {
+table.list {
     width: 600px;
 }
 
@@ -35,7 +35,7 @@ tr:nth-of-type(odd) {
 }
 
 th, td {
-    padding: 4px;
+    padding: 5px;
 }
 
 th {
@@ -56,6 +56,10 @@ td button {
     border: none;
 }
 
+.check {
+    width: 50px;
+}
+
 .controls {
     margin: 10px 0;
 }
@@ -71,9 +75,17 @@ td button {
 
 .error {
     font-weight: bold;
+    margin: 10px 0;
+}
+
+.no {
     color: red;
 }
 
-.check {
-    width: 50px;
+.update {
+    margin: 10px 0;
+}
+
+.yes {
+    color: limegreen;
 }

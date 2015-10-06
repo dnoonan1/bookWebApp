@@ -25,37 +25,31 @@
             </header>
             
             <div class="controls">
-                <button form="refresh">
-                    <span class="glyphicon glyphicon-refresh" title="Refresh"></span>
-                </button>
                 <button form="action-list">
                     <span class="glyphicon glyphicon-list-alt" title="List Authors"></span>
-                </button>
-                <button form="action-add">
-                    <span class="glyphicon glyphicon-plus" title="Add Author"></span>
-                </button>
-                <button form="action-delete-selected">
-                    <span class="glyphicon glyphicon-trash" title=""></span>
                 </button>
                 <button form="action-stats">
                     <span class="glyphicon glyphicon-stats" title="Statistics"></span>
                 </button>
             </div>
 
-            <form id="refresh" action="author?action=edit&id=${author.id}" method="POST"></form>
             <form id="action-list" action="author?action=list" method="POST"></form>
-            <form id="action-add" action="author?action=add" method="POST"></form>
             <form id="action-stats" action="author?action=stats" method="POST"></form>
-            <form id="action-delete-selected" action="" method="POST"></form>
             
-            <form action="author?action=edit" method="POST">
+            <form id="update-author" action="author?action=edit" method="POST">
                 <label for="id">ID: ${author.id}</label>
                 <input type="hidden" id="id" name="id" value="${author.id}">
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" value="${author.name}" required>
                 <label for="dateAdded">Date Added</label>
                 <input type="text" id="dateAdded" name="dateAdded" value="<fmt:formatDate pattern="MM/dd/yyyy" value="${author.dateAdded}"></fmt:formatDate>" placeholder="mm/dd/yyyy" required>
-                <input type="submit" value="Submit">
+                <!-- <input type="submit" value="Submit"> -->
+                <button form="update-author" class="yes" title="Save Changes">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button form="action-list" class="no" title="Cancel">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
             </form>
         <c:if test="${errMsg != null}">
             <div class="error">Sorry, data could not be retrieved:<br>
@@ -64,8 +58,11 @@
         </c:if>
         <c:if test="${updated != null}">
             <div class="update">
-                <fmt:formatDate value="${timestamp}" pattern="yyyy-mm-dd hh:mma"></fmt:formatDate>
-                Author updated!
+                <span class="text-success bg-success">Author updated!</span>
+                <br>
+                <span class="text-info bg-info">
+                    Time: <fmt:formatDate value="${timestamp}" pattern="mm-dd-yyy hh:mm:ssa"></fmt:formatDate>
+                </span>
             </div>
         </c:if>    
         </div>

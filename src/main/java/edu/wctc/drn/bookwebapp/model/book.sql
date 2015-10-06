@@ -5,3 +5,4 @@ CREATE TABLE `book`.`author` (
   `author_name` VARCHAR(80) NULL,
   `date_added` DATE NULL,
   PRIMARY KEY (`author_id`));
+

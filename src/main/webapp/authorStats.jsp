@@ -33,27 +33,15 @@
                 <button form="action-list">
                     <span class="glyphicon glyphicon-list-alt" title="List Authors"></span>
                 </button>
-                <button form="action-add">
-                    <span class="glyphicon glyphicon-plus" title="Add Author"></span>
-                </button>
-                <button form="action-delete-selected">
-                    <span class="glyphicon glyphicon-trash" title=""></span>
-                </button>
-                <button form="action-stats">
-                    <span class="glyphicon glyphicon-stats" title="Statistics"></span>
-                </button>
             </div>
             
             <form id="refresh" action="author?action=stats" method="POST"></form>
             <form id="action-list" action="author?action=list" method="POST"></form>
-            <form id="action-add" action="author?action=add" method="POST"></form>
-            <form id="action-stats" action="author?action=stats" method="POST"></form>
-            <form id="action-delete-selected" action="" method="POST"></form>
             
             <table>
                 <tr>
-                    <th>Stat</th>
-                    <th>Value</th>
+                    <th class="text-left">Stat</th>
+                    <th class="text-right">Value</th>
                 </tr>
                 <tr>
                     <td class="text-left">Author Count</td>
