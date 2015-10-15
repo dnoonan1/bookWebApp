@@ -66,22 +66,22 @@
                     </tr>
                 </c:if>
                 <c:forEach var="a" items="${authors}">
-                    <form id="edit-${a.id}" action="author?action=edit&id=${a.id}" method="POST"></form>
-                    <form id="delete-${a.id}" action="author?action=delete&id=${a.id}" method="POST"></form>
+                    <form id="edit-${a.authorId}" action="author?action=edit&id=${a.authorId}" method="POST"></form>
+                    <form id="delete-${a.authorId}" action="author?action=delete&id=${a.authorId}" method="POST"></form>
                     <tr>
                         <td class="check">
-                            <input form="action-delete-selected" type="checkbox" name="id" value="${a.id}">
+                            <input form="action-delete-selected" type="checkbox" name="id" value="${a.authorId}">
                         </td>
-                        <td><fmt:formatNumber value="${a.id}" pattern="0000"></fmt:formatNumber></td>
-                        <td class="text-left">${a.name}</td>
+                        <td><fmt:formatNumber value="${a.authorId}" pattern="0000"></fmt:formatNumber></td>
+                        <td class="text-left">${a.authorName}</td>
                         <td>
                             <fmt:formatDate pattern="MM/dd/yyyy" value="${a.dateAdded}"></fmt:formatDate>
                         </td>
                         <td>
-                            <button form="edit-${a.id}">
+                            <button form="edit-${a.authorId}">
                                 <span class="glyphicon glyphicon-edit" title="Edit"></span>
                             </button>
-                            <button form="delete-${a.id}">
+                            <button form="delete-${a.authorId}">
                                 <span class="glyphicon glyphicon-trash" title="Delete"></span>
                             </button>
                         </td>

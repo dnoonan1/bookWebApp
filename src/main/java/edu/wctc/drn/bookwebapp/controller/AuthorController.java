@@ -1,15 +1,12 @@
 package edu.wctc.drn.bookwebapp.controller;
 
-import edu.wctc.drn.bookwebapp.model.*;
+import edu.wctc.drn.bookwebapp.entity.Author;
+import edu.wctc.drn.bookwebapp.service.AuthorFacade;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -18,7 +15,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 
 /**
  * The main controller for author-related activities
@@ -29,15 +25,6 @@ import javax.sql.DataSource;
 public class AuthorController extends HttpServlet {
 
     // NO MAGIC NUMBERS!
-    private static final String DATABASE = "database";
-    private static final String DATABASE_JNDI_NAME = "database.jndiName";
-    private static final String DATABASE_CONNECTOR_NAME = "database.connector";
-    private static final String DRIVER_CLASS_NAME = "database.driverClassName";
-    private static final String DATABASE_URL = "database.url";
-    private static final String USER_NAME = "database.userName";
-    private static final String PASSWORD = "database.password";
-    private static final String DAO_CLASS_NAME = "dao.author";
-
     private static final String DATE_PATTERN = "MM/dd/yyyy";
 
     private static final String LIST_PAGE = "/listAuthors.jsp";
@@ -67,94 +54,12 @@ public class AuthorController extends HttpServlet {
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
 
     private ServletContext context;
-    private AuthorService authorService;
+    @Inject
+    private AuthorFacade authorService;
     
     @Override
     public void init() throws ServletException {
         context = this.getServletContext();
-        
-    }
-    
-    public void initAuthorService()
-            throws ClassNotFoundException, NoSuchMethodException,
-            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NamingException {
-            // Old Way (without DI)
-        
-//            Database db = new MySqlDatabase(
-//                    "com.mysql.jdbc.Driver",
-//                    "jdbc:mysql://localhost:3306/book",
-//                    "root", "admin"
-//            );
-//            DAO<Author> authorDAO = new AuthorDAO(db);
-            
-            // New Way (with DI)
-            String dbClassName = context.getInitParameter(DATABASE);
-            String connectorName = context.getInitParameter(DATABASE_CONNECTOR_NAME);
-            String driverClassName = context.getInitParameter(DRIVER_CLASS_NAME);
-            String url = context.getInitParameter(DATABASE_URL);
-            String userName = context.getInitParameter(USER_NAME);
-            String password = context.getInitParameter(PASSWORD);
-            String daoClassName = context.getInitParameter(DAO_CLASS_NAME);
-            
-            // Old
-//            Class dbClass = Class.forName(dbClassName);
-//            Class[] params = {
-//                driverClassName.getClass(),
-//                url.getClass(),
-//                userName.getClass(),
-//                password.getClass()
-//            };
-            
-//            Constructor constructor = null;
-//            try {
-//                constructor = dbClass.getConstructor(params);
-//            } catch (NoSuchMethodException e) {
-//                // Just catch exception; constructor will remain null
-//            }
-//            Database db;
-//            if (constructor != null) {
-//                Object[] args = {driverClassName, url, userName, password};
-//                db = (Database)constructor.newInstance(args);
-//            } else { // Use DataSource object
-//                Context ctx = new InitialContext();
-//                DataSource ds = (DataSource)ctx.lookup("jdbc/book");
-//                db = (Database)dbClass.getConstructor(DataSource.class).newInstance(ds);
-//            }
-            
-            // New
-            Class connectorClass = Class.forName(connectorName);
-            Class[] params = {
-                driverClassName.getClass(),
-                url.getClass(),
-                userName.getClass(),
-                password.getClass()
-            };
-            Constructor constructor = null;
-            try {
-                constructor = connectorClass.getConstructor(params);
-            } catch (NoSuchMethodException e) {
-                // Just catch exception; constructor will remain null
-            }
-            DatabaseConnector dc;
-            if (constructor != null) {
-                Object[] args = {driverClassName, url, userName, password};
-                dc = (DatabaseConnector)constructor.newInstance(args);
-            } else { // Use DataSource object
-                Context ctx = new InitialContext();
-                String jndiName = context.getInitParameter(DATABASE_JNDI_NAME);
-                DataSource ds = (DataSource)ctx.lookup(jndiName);
-                dc = (DatabaseConnector)connectorClass.getConstructor(DataSource.class).newInstance(ds);
-            }
-            
-            Class dbClass = Class.forName(dbClassName);
-            Database db = (Database)dbClass.getConstructor(DatabaseConnector.class).newInstance(dc);
-            
-            Class daoClass = Class.forName(daoClassName);
-            DAO<Author> authorDAO = (DAO<Author>)daoClass
-                    .getConstructor(Database.class)
-                    .newInstance(db);
-            
-            authorService = new AuthorService(authorDAO);
     }
     
     /**
@@ -171,38 +76,11 @@ public class AuthorController extends HttpServlet {
         
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
-        AuthorStats stats = (AuthorStats)session.getAttribute(STATS_ATTR);
-        if (stats == null) {
-            stats = new AuthorStats();
-        }
         
         String destination = LIST_PAGE;
         String action = request.getParameter(ACTION_PARAM);
         
         try {
-
-//            Class dbClass = Class.forName(dbClassName);
-//            Class[] params = {
-//                driverClassName.getClass(),
-//                url.getClass(),
-//                userName.getClass(),
-//                password.getClass()
-//            };
-//            Object[] args = {driverClassName, url, userName, password};
-//            Database db = (Database)dbClass.getConstructor(params).newInstance(args);
-//            
-//            Class daoClass = Class.forName(daoClassName);
-//            params = new Class[] {Database.class};
-//            args = new Object[] {db};
-//            DAO<Author> authorDAO = (DAO<Author>)daoClass
-//                    .getConstructor(params)
-//                    .newInstance(args);
-//            
-//            authorService = new AuthorService(authorDAO);
-            
-            if (authorService == null) {
-                initAuthorService();
-            }
             
             Author author;
             List<Author> authors;
@@ -215,23 +93,20 @@ public class AuthorController extends HttpServlet {
             switch (action) {
                 
                 case LIST_ACTION:
-                    authors = authorService.getAllAuthors();
+                    authors = authorService.findAll();
                     request.setAttribute(AUTHORS_ATTR, authors);
-                    stats.setAuthorCount(authors.size());
                     destination = LIST_PAGE;
                     break;
                     
                 case ADD_ACTION:
                     name = request.getParameter(NAME_PARAM);
                     if (name != null) {
-                        author = new Author(name);
-                        authorService.addAuthor(author);
+                        author = new Author();
+                        author.setAuthorName(name);
+                        authorService.create(author);
                         timestamp = new Date();
-//                        authors = authorService.getAllAuthors();
-//                        request.setAttribute(AUTHORS_ATTR, authors);
-                        request.setAttribute(AUTHOR_ATTR, author);
                         request.setAttribute(TIMESTAMP_ATTR, timestamp);
-                        stats.addAuthor();
+                        request.setAttribute(AUTHOR_ATTR, author);
                     }
                     destination = ADD_PAGE;
                     break;
@@ -242,17 +117,18 @@ public class AuthorController extends HttpServlet {
                     name = request.getParameter(NAME_PARAM);
                     sDate = request.getParameter(DATE_ADDED_PARAM);
                     if (name == null || sDate == null) {
-                        author = authorService.getAuthorById(id);   
+                        author = authorService.find(id);   
                     } else {
                         SimpleDateFormat df = new SimpleDateFormat(DATE_PATTERN);
                         dateAdded = df.parse(sDate);
-                        author = new Author(id, name, dateAdded);
-                        authorService.saveAuthor(author);
+                        author = authorService.find(id);
+                        author.setAuthorName(name);
+                        author.setDateAdded(dateAdded);
+                        authorService.edit(author);
                         timestamp = new Date();
                         Date d = new Date();
                         request.setAttribute(UPDATED_ATTR, true);
                         request.setAttribute(TIMESTAMP_ATTR, timestamp);
-                        stats.editAuthor();
                     }
                     request.setAttribute(AUTHOR_ATTR, author);
                     destination = EDIT_PAGE;
@@ -261,10 +137,11 @@ public class AuthorController extends HttpServlet {
                 case DELETE_ACTION:
                     String[] ids = request.getParameterValues(ID_PARAM);
                     for (String s : ids) {
-                        authorService.deleteAuthor(Integer.parseInt(s));
-                        stats.deleteAuthor();
+                        id = Integer.parseInt(s);
+                        author = authorService.find(id);
+                        authorService.remove(author);
                     }
-                    authors = authorService.getAllAuthors();
+                    authors = authorService.findAll();
                     request.setAttribute(AUTHORS_ATTR, authors);
                     destination = LIST_PAGE;
                     break;
@@ -285,8 +162,6 @@ public class AuthorController extends HttpServlet {
                 e.printStackTrace(out);
             }*/
         }
-
-        session.setAttribute(STATS_ATTR, stats);
         
         // Forward to destination page
         RequestDispatcher dispatcher

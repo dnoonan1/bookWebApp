@@ -25,7 +25,7 @@
                 <h1>Edit Author</h1>
             </header>
             
-            <form id="refresh" action="author?action=edit&id=${author.id}" method="POST"></form>
+            <form id="refresh" action="author?action=edit&id=${author.authorId}" method="POST"></form>
             <form id="action-list" action="author?action=list" method="POST"></form>
             <form id="action-stats" action="author?action=stats" method="POST"></form>
             
@@ -42,10 +42,10 @@
             </div>
             
             <form id="update-author" action="author?action=edit" method="POST">
-                <label for="id">ID: ${author.id}</label>
-                <input type="hidden" id="id" name="id" value="${author.id}">
+                <label for="id">ID: ${author.authorId}</label>
+                <input type="hidden" id="id" name="id" value="${author.authorId}">
                 <label for="name">Name</label>
-                <input type="text" id="name" name="name" value="${author.name}" required>
+                <input type="text" id="name" name="name" value="${author.authorName}" required>
                 <label for="dateAdded">Date Added</label>
                 <input type="text" id="dateAdded" name="dateAdded" value="<fmt:formatDate pattern="MM/dd/yyyy" value="${author.dateAdded}"></fmt:formatDate>" placeholder="mm/dd/yyyy" required>
                 <!-- <input type="submit" value="Submit"> -->
