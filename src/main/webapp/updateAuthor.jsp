@@ -49,6 +49,13 @@
                 <label for="dateAdded">Date Added</label>
                 <input type="text" id="dateAdded" name="dateAdded" value="<fmt:formatDate pattern="MM/dd/yyyy" value="${author.dateAdded}"></fmt:formatDate>" placeholder="mm/dd/yyyy" required>
                 <!-- <input type="submit" value="Submit"> -->
+                <c:if test="${not empty author.bookSet}">
+                    <select id="books">
+                        <c:forEach var="b" items="${author.bookSet}">
+                            <option value="${b.title}">${b.title}</option>
+                        </c:forEach>
+                    </select>
+                </c:if>
                 <button form="update-author" class="yes" title="Save Changes">
                     <span class="glyphicon glyphicon-ok"></span>
                 </button>

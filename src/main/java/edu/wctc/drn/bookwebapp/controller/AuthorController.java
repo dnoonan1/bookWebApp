@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 /**
  * The main controller for author-related activities
  *
- * @author jlombardo
+ * @author dnoonan1
  */
 @WebServlet(name = "AuthorController", urlPatterns = {"/author"})
 public class AuthorController extends HttpServlet {
