@@ -2,8 +2,8 @@ package edu.wctc.drn.bookwebapp.controller;
 
 import edu.wctc.drn.bookwebapp.entity.Author;
 import edu.wctc.drn.bookwebapp.entity.Book;
-import edu.wctc.drn.bookwebapp.service.AuthorFacade;
-import edu.wctc.drn.bookwebapp.service.BookFacade;
+import edu.wctc.drn.bookwebapp.service.AuthorService;
+import edu.wctc.drn.bookwebapp.service.BookService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -16,6 +16,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -49,10 +51,25 @@ public class BookController extends HttpServlet {
     private static final String ATTR_AUTHORS = "authors";
     
     private ServletContext appContext;
-    @Inject
-    private BookFacade bookService;
-    @Inject
-    private AuthorFacade authorService;
+    private BookService bookService;
+    private AuthorService authorService;
+    
+    @Override
+    public void init() throws ServletException {
+        appContext = this.getServletContext();
+    }
+    
+    public void initAuthorService() {
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(appContext);
+        authorService = (AuthorService)ctx.getBean("authorService");
+    }
+    
+    public void initBookService() {
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(appContext);
+        bookService = (BookService)ctx.getBean("bookService");
+    }
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -66,6 +83,13 @@ public class BookController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
+        if (bookService == null) {
+            initBookService();
+        }
+        if (authorService == null) {
+            initAuthorService();
+        }
         
         String destination = LIST_PAGE;
         String action = request.getParameter(PARAM_ACTION);
@@ -138,7 +162,7 @@ public class BookController extends HttpServlet {
         book.setIsbn(isbn);
         book.setAuthorId(author);
         if (book.getBookId() == null) {
-            bookService.create(book);
+            bookService.edit(book);
         } else {
             bookService.edit(book);
         }

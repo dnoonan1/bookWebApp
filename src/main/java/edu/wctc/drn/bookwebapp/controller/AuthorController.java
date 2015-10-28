@@ -1,7 +1,7 @@
 package edu.wctc.drn.bookwebapp.controller;
 
 import edu.wctc.drn.bookwebapp.entity.Author;
-import edu.wctc.drn.bookwebapp.service.AuthorFacade;
+import edu.wctc.drn.bookwebapp.service.AuthorService;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * The main controller for author-related activities
@@ -54,12 +56,17 @@ public class AuthorController extends HttpServlet {
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
 
     private ServletContext context;
-    @Inject
-    private AuthorFacade authorService;
+    private AuthorService authorService;
     
     @Override
     public void init() throws ServletException {
         context = this.getServletContext();
+    }
+    
+    public void initAuthorService() {
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(context);
+        authorService = (AuthorService)ctx.getBean("authorService");
     }
     
     /**
@@ -76,6 +83,10 @@ public class AuthorController extends HttpServlet {
         
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
+        
+        if (authorService == null) {
+            initAuthorService();
+        }
         
         String destination = LIST_PAGE;
         String action = request.getParameter(ACTION_PARAM);
@@ -103,7 +114,7 @@ public class AuthorController extends HttpServlet {
                     if (name != null) {
                         author = new Author();
                         author.setAuthorName(name);
-                        authorService.create(author);
+                        authorService.edit(author);
                         timestamp = new Date();
                         request.setAttribute(TIMESTAMP_ATTR, timestamp);
                         request.setAttribute(AUTHOR_ATTR, author);
