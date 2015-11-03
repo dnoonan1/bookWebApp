@@ -27,7 +27,7 @@
                 <h1>Statistics</h1>
             </header>
             
-            <form id="refresh" action="author?action=stats" method="POST"></form>
+            <form id="refresh" action="author?action=viewStats" method="POST"></form>
             <form id="action-list" action="author?action=list" method="POST"></form>
             
             <div class="controls">

@@ -27,7 +27,10 @@
             <form id="refresh" action="book?action=list" method="POST"></form>
             <form id="action-add" action="book?action=add" method="POST"></form>
             <form id="action-delete-selected" action="book?action=delete" method="POST"></form>
-            <form id="action-stats" action="book?action=stats" method="POST"></form>
+            <form id="action-stats" action="book?action=viewStats" method="POST"></form>
+            
+            <a href="../bookWebApp">bookWebApp</a>
+            <a href="main">main</a>
             
             <div class="controls">
                 <button form="refresh">

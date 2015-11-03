@@ -30,7 +30,7 @@
             <form id="refresh" action="author?action=list" method="POST"></form>
             <form id="action-add" action="author?action=add" method="POST"></form>
             <form id="action-delete-selected" action="author?action=delete" method="POST"></form>
-            <form id="action-stats" action="author?action=stats" method="POST"></form>
+            <form id="action-stats" action="author?action=viewStats" method="POST"></form>
             
             <div class="controls">
                 <button form="refresh">

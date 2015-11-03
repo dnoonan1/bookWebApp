@@ -33,7 +33,7 @@
             
             <form id="refresh" action="book?action=${param.action}" method="POST"></form>
             <form id="action-list" action="book?action=list" method="POST"></form>
-            <form id="action-stats" action="book?action=stats" method="POST"></form>
+            <form id="action-stats" action="book?action=viewStats" method="POST"></form>
             
             <div class="controls">
                 <button form="refresh">

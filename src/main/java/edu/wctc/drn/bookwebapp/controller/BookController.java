@@ -5,10 +5,8 @@ import edu.wctc.drn.bookwebapp.entity.Book;
 import edu.wctc.drn.bookwebapp.service.AuthorService;
 import edu.wctc.drn.bookwebapp.service.BookService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -129,6 +127,7 @@ public class BookController extends HttpServlet {
             case ACTION_LIST:
             default:
                 listBooks(request);
+//                destination = LIST_PAGE; // already set
                 break;
             
         }

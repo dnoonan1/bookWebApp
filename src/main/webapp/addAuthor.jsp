@@ -26,7 +26,7 @@
             </header>
 
             <form id="action-list" action="author?action=list" method="POST"></form>
-            <form id="action-stats" action="author?action=stats" method="POST"></form>
+            <form id="action-stats" action="author?action=viewStats" method="POST"></form>
             
             <div class="controls">
                 <button form="action-list">

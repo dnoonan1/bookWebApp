@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -35,37 +34,37 @@ public class AuthorController extends HttpServlet {
 //    private static final String DELETE_PAGE = "/deleteAuthor.jsp";
     private static final String STATS_PAGE = "/authorStats.jsp";
 
-    private static final String LIST_ACTION = "list";
-    private static final String ADD_ACTION = "add";
-    private static final String EDIT_ACTION = "edit";
-    private static final String DELETE_ACTION = "delete";
-    private static final String STATS_ACTION = "stats";
+    private static final String ACTION_LIST = "list";
+    private static final String ACTION_ADD = "add";
+    private static final String ACTION_EDIT = "edit";
+    private static final String ACTION_DELETE = "delete";
+    private static final String ACTION_VIEW_STATS = "viewStats";
 
-    private static final String ACTION_PARAM = "action";
-    private static final String ID_PARAM = "id";
-    private static final String NAME_PARAM = "name";
-    private static final String DATE_ADDED_PARAM = "dateAdded";
+    private static final String PARAM_ACTION = "action";
+    private static final String PARAM_ID = "id";
+    private static final String PARAM_NAME = "name";
+    private static final String PARAM_DATE_ADDED = "dateAdded";
 
-    private static final String AUTHOR_ATTR = "author";
-    private static final String AUTHORS_ATTR = "authors";
-    private static final String TIMESTAMP_ATTR = "timestamp";
-    private static final String UPDATED_ATTR = "updated";
-    private static final String STATS_ATTR = "stats";
+    private static final String ATTR_AUTHOR = "author";
+    private static final String ATTR_AUTHORS = "authors";
+    private static final String ATTR_TIMESTAMP = "timestamp";
+    private static final String ATTR_UPDATED = "updated";
+    private static final String ATTR_STATS = "stats";
     private static final String ERR_MSG_ATTR = "errMsg";
 
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
 
-    private ServletContext context;
+    private ServletContext appContext;
     private AuthorService authorService;
     
     @Override
     public void init() throws ServletException {
-        context = this.getServletContext();
+        appContext = this.getServletContext();
     }
     
     public void initAuthorService() {
         WebApplicationContext ctx
-                = WebApplicationContextUtils.getWebApplicationContext(context);
+                = WebApplicationContextUtils.getWebApplicationContext(appContext);
         authorService = (AuthorService)ctx.getBean("authorService");
     }
     
@@ -89,7 +88,7 @@ public class AuthorController extends HttpServlet {
         }
         
         String destination = LIST_PAGE;
-        String action = request.getParameter(ACTION_PARAM);
+        String action = request.getParameter(PARAM_ACTION);
         
         try {
             
@@ -103,30 +102,30 @@ public class AuthorController extends HttpServlet {
             
             switch (action) {
                 
-                case LIST_ACTION:
+                case ACTION_LIST:
                     authors = authorService.findAll();
-                    request.setAttribute(AUTHORS_ATTR, authors);
+                    request.setAttribute(ATTR_AUTHORS, authors);
                     destination = LIST_PAGE;
                     break;
                     
-                case ADD_ACTION:
-                    name = request.getParameter(NAME_PARAM);
+                case ACTION_ADD:
+                    name = request.getParameter(PARAM_NAME);
                     if (name != null) {
                         author = new Author();
                         author.setAuthorName(name);
                         authorService.edit(author);
                         timestamp = new Date();
-                        request.setAttribute(TIMESTAMP_ATTR, timestamp);
-                        request.setAttribute(AUTHOR_ATTR, author);
+                        request.setAttribute(ATTR_TIMESTAMP, timestamp);
+                        request.setAttribute(ATTR_AUTHOR, author);
                     }
                     destination = ADD_PAGE;
                     break;
                     
-                case EDIT_ACTION:
-                    sId = request.getParameter(ID_PARAM);
+                case ACTION_EDIT:
+                    sId = request.getParameter(PARAM_ID);
                     int id = Integer.parseInt(sId);
-                    name = request.getParameter(NAME_PARAM);
-                    sDate = request.getParameter(DATE_ADDED_PARAM);
+                    name = request.getParameter(PARAM_NAME);
+                    sDate = request.getParameter(PARAM_DATE_ADDED);
                     if (name == null || sDate == null) {
                         author = authorService.find(id);   
                     } else {
@@ -138,26 +137,26 @@ public class AuthorController extends HttpServlet {
                         authorService.edit(author);
                         timestamp = new Date();
                         Date d = new Date();
-                        request.setAttribute(UPDATED_ATTR, true);
-                        request.setAttribute(TIMESTAMP_ATTR, timestamp);
+                        request.setAttribute(ATTR_UPDATED, true);
+                        request.setAttribute(ATTR_TIMESTAMP, timestamp);
                     }
-                    request.setAttribute(AUTHOR_ATTR, author);
+                    request.setAttribute(ATTR_AUTHOR, author);
                     destination = EDIT_PAGE;
                     break;
                         
-                case DELETE_ACTION:
-                    String[] ids = request.getParameterValues(ID_PARAM);
+                case ACTION_DELETE:
+                    String[] ids = request.getParameterValues(PARAM_ID);
                     for (String s : ids) {
                         id = Integer.parseInt(s);
                         author = authorService.find(id);
                         authorService.remove(author);
                     }
                     authors = authorService.findAll();
-                    request.setAttribute(AUTHORS_ATTR, authors);
+                    request.setAttribute(ATTR_AUTHORS, authors);
                     destination = LIST_PAGE;
                     break;
                 
-                case STATS_ACTION:
+                case ACTION_VIEW_STATS:
                     destination = STATS_PAGE;
                     break;
                 
