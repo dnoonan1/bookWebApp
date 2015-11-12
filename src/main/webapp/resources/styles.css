@@ -7,6 +7,10 @@ body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+#user {
+    float: right;
+}
+
 form input, form label {
     display: block;
     margin: 10px 0;

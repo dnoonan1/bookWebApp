@@ -9,6 +9,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,14 +17,13 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BookWebApp | Author List</title>
-        <!-- Bootstrap 3.3.5 -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" href="styles.css">
+        <jsp:include page="WEB-INF/jspf/styles.jsp" />
     </head>
     <body>
         <div class="container">
             
             <header>
+                <jsp:include page="WEB-INF/jspf/header.jsp" />
                 <h1>Author List</h1>
             </header>
             

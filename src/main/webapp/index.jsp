@@ -10,15 +10,22 @@
     <head>
         <meta charset="utf-8">
         <title>BookWebApp | Home</title>
-        <!-- Bootstrap 3.3.5 -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" href="styles.css">
+        <jsp:include page="WEB-INF/jspf/styles.jsp" />
     </head>
+    
     <body>
-        <h1>Pick an Administrative Task</h1>
-        <ul>
-            <li><a href="author?action=list">View All Authors</a></li>
-            <li><a href="book?action=list">View All Books</a></li>
-        </ul>
+        <div class="container">
+            
+            <header>
+                <jsp:include page="WEB-INF/jspf/header.jsp" />
+            </header>
+            
+            <h1>Pick an Administrative Task</h1>
+            <ul>
+                <li><a href="author?action=list">View All Authors</a></li>
+                <li><a href="book?action=list">View All Books</a></li>
+            </ul>
+            
+        </div>
     </body>
 </html>

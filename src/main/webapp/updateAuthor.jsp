@@ -14,14 +14,13 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BookWebApp | Edit Author</title>
-        <!-- Bootstrap 3.3.5 -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" href="styles.css">
+        <jsp:include page="WEB-INF/jspf/styles.jsp" />
     </head>
     <body>
         <div class="container">
             
             <header>
+                <jsp:include page="WEB-INF/jspf/header.jsp" />
                 <h1>Edit Author</h1>
             </header>
             

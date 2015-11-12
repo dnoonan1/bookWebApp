@@ -16,9 +16,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BookWebApp | Statistics</title>
-        <!-- Bootstrap 3.3.5 -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" href="styles.css">
+        <jsp:include page="WEB-INF/jspf/styles.jsp" />
     </head>
     <body>
         <div class="container">

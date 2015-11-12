@@ -22,14 +22,15 @@
     <head>
         <meta charset="utf-8">
         <title>BookWebApp | ${title} Book</title>
-        <!-- Bootstrap 3.3.5 -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" href="styles.css">
+        <jsp:include page="WEB-INF/jspf/styles.jsp" />
     </head>
     <body>
         <div class="container">
             
-            <h1>${title} Book</h1>
+            <header>
+                <jsp:include page="WEB-INF/jspf/header.jsp" />
+                <h1>${title} Book</h1>
+            </header>
             
             <form id="refresh" action="book?action=${param.action}" method="POST"></form>
             <form id="action-list" action="book?action=list" method="POST"></form>
