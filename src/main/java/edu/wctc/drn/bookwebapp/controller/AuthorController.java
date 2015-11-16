@@ -3,9 +3,12 @@ package edu.wctc.drn.bookwebapp.controller;
 import edu.wctc.drn.bookwebapp.entity.Author;
 import edu.wctc.drn.bookwebapp.service.AuthorService;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -39,6 +42,8 @@ public class AuthorController extends HttpServlet {
     private static final String ACTION_EDIT = "edit";
     private static final String ACTION_DELETE = "delete";
     private static final String ACTION_VIEW_STATS = "viewStats";
+    private static final String ACTION_AJAX_LIST = "listAjax";
+    private static final String ACTION_AJAX_FIND_BY_ID = "findByIdAjax";
 
     private static final String PARAM_ACTION = "action";
     private static final String PARAM_ID = "id";
@@ -82,6 +87,7 @@ public class AuthorController extends HttpServlet {
         
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
+        PrintWriter out = response.getWriter();
         
         if (authorService == null) {
             initAuthorService();
@@ -101,6 +107,28 @@ public class AuthorController extends HttpServlet {
             Date timestamp;
             
             switch (action) {
+                
+                case ACTION_AJAX_LIST:
+                    authors = authorService.findAll();
+                    JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+                    
+                    authors.forEach((a) -> {
+                        jsonArrayBuilder.add(
+                            Json.createObjectBuilder()
+                                    .add(PARAM_ID, a.getAuthorId())
+                                    .add(PARAM_NAME, a.getAuthorName())
+                                    .add(PARAM_DATE_ADDED, a.getDateAdded().toString())
+                        );
+                    });
+                    
+                    response.setContentType("application/json");
+                    out.write(jsonArrayBuilder.build().toString());
+                    out.flush();
+                    return; // prevent request dispatcher!
+                
+                case ACTION_AJAX_FIND_BY_ID:
+                    // TODO
+                    return;
                 
                 case ACTION_LIST:
                     authors = authorService.findAll();

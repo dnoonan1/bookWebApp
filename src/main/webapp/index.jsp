@@ -23,6 +23,7 @@
             <h1>Pick an Administrative Task</h1>
             <ul>
                 <li><a href="author?action=list">View All Authors</a></li>
+                <li><a href="listAuthorsAjax.jsp">View All Authors (AJAX)</a></li>
                 <li><a href="book?action=list">View All Books</a></li>
             </ul>
             
