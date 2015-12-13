@@ -70,6 +70,19 @@
         <param-value>edu.wctc.drn.bookwebapp.model.AuthorDAO</param-value>
     </context-param>
     
+    <!-- Add for Spring REST -->
+    <servlet>
+        <servlet-name>exporter</servlet-name>
+        <servlet-class>org.springframework.data.rest.webmvc.RepositoryRestDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>exporter</servlet-name>
+        <url-pattern>/api/v1/*</url-pattern>
+    </servlet-mapping>
+    <!-- end spring rest -->
+    
     <session-config>
         <session-timeout>
             30
